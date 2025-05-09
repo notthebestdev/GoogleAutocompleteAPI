@@ -11,7 +11,7 @@ import json
 from typing import List, Optional
 
 app = FastAPI(
-    title="Google Search Suggestions API",
+    title="Google Autocomplete API",
     description=
     "A FastAPI service that provides Google search suggestions with caching functionality",
     version="1.0.0",
