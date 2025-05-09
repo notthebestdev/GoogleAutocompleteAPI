@@ -5,6 +5,8 @@ description = ""
 authors = ["Your Name <you@example.com>"]
 requires-python = ">=3.11"
 dependencies = [
+    "fastapi>=0.115.12",
     "flask>=3.1.0",
     "requests>=2.32.3",
+    "uvicorn>=0.34.2",
 ]
