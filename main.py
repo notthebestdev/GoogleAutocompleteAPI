@@ -1,5 +1,6 @@
 
 from fastapi import FastAPI, Query, Request, HTTPException
+from fastapi.responses import JSONResponse
 from fastapi.responses import RedirectResponse
 import requests
 from datetime import datetime, timedelta
@@ -52,9 +53,9 @@ async def rate_limit_middleware(request: Request, call_next):
     if request.url.path.startswith("/api"):
         client_ip = request.client.host
         if rate_limiter.is_rate_limited(client_ip):
-            raise HTTPException(
+            return JSONResponse(
                 status_code=429,
-                detail=f"Rate limit exceeded. Maximum {RATE_LIMIT_REQUESTS} requests per {RATE_LIMIT_DURATION.seconds // 60} minutes."
+                content={"detail": f"Rate limit exceeded. Maximum {RATE_LIMIT_REQUESTS} requests per {RATE_LIMIT_DURATION.seconds // 60} minutes."}
             )
     return await call_next(request)
 
