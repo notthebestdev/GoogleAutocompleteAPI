@@ -1,7 +1,9 @@
 
-from fastapi import FastAPI, Query
+from fastapi import FastAPI, Query, Request, HTTPException
 from fastapi.responses import RedirectResponse
 import requests
+from datetime import datetime, timedelta
+from collections import defaultdict
 from urllib.parse import quote
 import re
 import html
@@ -19,10 +21,42 @@ app = FastAPI(
 # Cache to store search results
 search_cache = {}
 
+# Rate limiter configuration
+RATE_LIMIT_DURATION = timedelta(minutes=1)  # Time window
+RATE_LIMIT_REQUESTS = 10  # Maximum requests per window
+
+class RateLimiter:
+    def __init__(self):
+        self.requests = defaultdict(list)  # IP -> list of request timestamps
+        
+    def is_rate_limited(self, ip: str) -> bool:
+        now = datetime.now()
+        self.requests[ip] = [req_time for req_time in self.requests[ip] 
+                           if now - req_time < RATE_LIMIT_DURATION]
+        
+        if len(self.requests[ip]) >= RATE_LIMIT_REQUESTS:
+            return True
+            
+        self.requests[ip].append(now)
+        return False
+
+rate_limiter = RateLimiter()
+
 @app.get("/", description="Redirects to API documentation")
 def index():
     # redirect users to /docs
     return RedirectResponse(url='/docs')
+
+@app.middleware("http")
+async def rate_limit_middleware(request: Request, call_next):
+    if request.url.path.startswith("/api"):
+        client_ip = request.client.host
+        if rate_limiter.is_rate_limited(client_ip):
+            raise HTTPException(
+                status_code=429,
+                detail=f"Rate limit exceeded. Maximum {RATE_LIMIT_REQUESTS} requests per {RATE_LIMIT_DURATION.seconds // 60} minutes."
+            )
+    return await call_next(request)
 
 @app.get("/api/v1", response_model=List[str], 
     description="Get Google search suggestions",
