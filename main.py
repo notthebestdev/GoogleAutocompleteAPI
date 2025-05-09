@@ -1,5 +1,6 @@
 
 from fastapi import FastAPI, Query
+from fastapi.responses import RedirectResponse
 import requests
 from urllib.parse import quote
 import re
@@ -14,7 +15,8 @@ search_cache = {}
 
 @app.get("/")
 def index():
-    return "Hello, World!"
+    # redirect users to /docs
+    return RedirectResponse(url='/docs')
 
 @app.get("/api/v1", response_model=List[str])
 def api_v1(search: Optional[str] = Query(None)):
