@@ -8,18 +8,27 @@ import html
 import json
 from typing import List, Optional
 
-app = FastAPI()
+app = FastAPI(
+    title="Google Search Suggestions API",
+    description="A FastAPI service that provides Google search suggestions with caching functionality",
+    version="1.0.0",
+    docs_url="/docs",
+    redoc_url="/redoc"
+)
 
 # Cache to store search results
 search_cache = {}
 
-@app.get("/")
+@app.get("/", description="Redirects to API documentation")
 def index():
     # redirect users to /docs
     return RedirectResponse(url='/docs')
 
-@app.get("/api/v1", response_model=List[str])
-def api_v1(search: Optional[str] = Query(None)):
+@app.get("/api/v1", response_model=List[str], 
+    description="Get Google search suggestions",
+    summary="Retrieve search suggestions",
+    response_description="List of search suggestions based on the query")
+def api_v1(search: Optional[str] = Query(None, description="Search term to get suggestions for")):
     if search:
         # Check if result is in cache
         if search in search_cache:
