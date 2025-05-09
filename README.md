@@ -15,7 +15,7 @@ A FastAPI-based REST API that provides Google search suggestions with caching fu
 ### Root Endpoint
 - URL: `/`
 - Method: `GET`
-- Response: A simple "Hello, World!" message
+- Response: Redirects you to /docs
 
 ### Search Suggestions
 - URL: `/api/v1`
@@ -45,9 +45,15 @@ GET /api/v1?search=python
 Response:
 ```json
 [
-    "python",
-    "python programming",
-    "python download",
-    "python tutorial"
+  "python compiler",
+  "python",
+  "python download",
+  "python online compiler",
+  "python programming",
+  "python tutorial",
+  "python interview questions",
+  "python install",
+  "python libraries",
+  "python snake"
 ]
 ```

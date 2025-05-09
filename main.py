@@ -97,7 +97,7 @@ def api_v1(search: str = Query(
             search_cache[search] = suggestions
             return suggestions
 
-    return []
+        return []
 
 
 if __name__ == "__main__":
