@@ -7,6 +7,9 @@ import json
 
 app = flask.Flask(__name__)
 
+# Cache to store search results
+search_cache = {}
+
 @app.route('/')
 def index():
     # return text
@@ -16,6 +19,10 @@ def index():
 def api_v1():
     search = flask.request.args.get('search')
     if search:
+        # Check if result is in cache
+        if search in search_cache:
+            return flask.jsonify(search_cache[search])
+            
         url_encoded_search = quote(search)
         response = requests.get(f"https://www.google.com/complete/search?q={url_encoded_search}&client=gws-wiz")
         match = re.search(r'window\.google\.ac\.h\((\[.*?\])\)', response.text)
@@ -30,8 +37,9 @@ def api_v1():
 
             # Extract suggestions (they're in data[0])
             suggestions = [html.unescape(re.sub(r'<.*?>', '', item[0])) for item in data[0]]
-
-            # Return suggestions in JSON format
+            
+            # Store in cache and return
+            search_cache[search] = suggestions
             return flask.jsonify(suggestions)
 
     # Return an empty list if no search term is provided
