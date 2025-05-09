@@ -20,7 +20,7 @@ A FastAPI-based REST API that provides Google search suggestions with caching fu
 ### Search Suggestions
 - URL: `/api/v1`
 - Method: `GET`
-- Query Parameter: `search` (optional)
+- Query Parameter: `search` (required)
 - Response: List of search suggestions based on the query
 
 ## Usage

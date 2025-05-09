@@ -68,12 +68,12 @@ async def rate_limit_middleware(request: Request, call_next):
 
 @app.get("/api/v1",
          response_model=List[str],
-         description="Get Google search suggestions",
+         description="Get Google search suggestions for a given search term",
          summary="Retrieve search suggestions",
          response_description="List of search suggestions based on the query")
-def api_v1(search: Optional[str] = Query(
-    None, description="Search term to get suggestions for")):
-    if search:
+def api_v1(search: str = Query(
+    ..., description="Search term to get suggestions for (required)")):
+    # search parameter is now required, no need to check if it exists
         # Check if result is in cache
         if search in search_cache:
             return search_cache[search]
